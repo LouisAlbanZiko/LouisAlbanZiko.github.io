@@ -3,7 +3,8 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Getting Started - docs.c_log</title>
+        <title>docs.c_log</title>
+        <meta name="robots" content="noindex" />
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -174,23 +175,167 @@ int main(int argc, char **argv)
 	CL_LOGGER_DESTROY(logger2);
 }
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="functions"><a class="header" href="#functions">Functions</a></h1>
+<p>This section provides in-depth information on the functions available.</p>
+<ul>
+<li><a href="./functions/CL_LOGGER_CREATE.html">CL_LOGGER_CREATE</a></li>
+<li><a href="./functions/CL_LOGGER_DESTROY.html">CL_LOGGER_DESTROY</a></li>
+<li><a href="./functions/CL_LOG_.html">CL_LOG_...</a></li>
+<li><a href="./functions/CL_LOG_LVL_SET.html">CL_LOG_LVL_SET</a></li>
+<li><a href="./functions/CL_LOG_LVL_GET.html">CL_LOG_LVL_GET</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cl_logger_create"><a class="header" href="#cl_logger_create">CL_LOGGER_CREATE</a></h1>
+<pre><code class="language-c">CL_Logger *CL_LOGGER_CREATE(const char *name, const char *pattern, uint64_t output_count, ...);
+</code></pre>
+<h4 id="parameters"><a class="header" href="#parameters">Parameters</a></h4>
+<ul>
+<li>
+<p><code>name</code> -&gt; the name of the logger which can be output when logging if it is contained in the pattern. If left NULL the logger will be named &quot;UNNAMED&quot;.</p>
+</li>
+<li>
+<p><code>pattern</code> -&gt; a string that will define the format of the output when logging. It can contain any character and any of the following formats:</p>
+<ul>
+<li><code>%F</code> -&gt; the source file at which the logging was done (__FILE__ macro)</li>
+<li><code>%L</code> -&gt; the line of the file at which the logging was done (__LINE__ macro)</li>
+<li><code>%T</code> -&gt; the time at which the logging was done in HH:MM:SS format</li>
+<li><code>%M</code> -&gt; the message that is passed to the loggin function. If %M is not present in the pattern the message will not be printed.</li>
+<li><code>%N</code> -&gt; the name of the logger</li>
+<li><code>%C</code> -&gt; the start and end of color. ex: %C Hello world %C ; in this case Hello world will be printed in color.</li>
+<li><code>%V</code> -&gt; the name of the log level which can be TRACE, INFO, WARN, ERROR or FATAL</li>
+</ul>
+<p>If NULL is passed the pattern will be set to CL_DEFAULT_PATTERN which is defined in <code>c_log.h</code>.
+To insert a <code>%</code> character in the pattern write <code>%%</code>.</p>
+</li>
+<li>
+<p><code>output_count</code> -&gt; the count of how many <code>FILE *</code> are to be passed as the next parameters.</p>
+</li>
+<li>
+<p><code>...</code> -&gt; the <code>FILE *</code>(s) to where the logger will output.</p>
+</li>
+</ul>
+<p>The function returns the pointer to the logger.</p>
+<h4 id="usage"><a class="header" href="#usage">Usage</a></h4>
+<p>To output with default pattern:</p>
+<pre><code class="language-c">CL_Logger *logger = CL_LOGGER_CREATE(&quot;TEST&quot;, NULL, 1, stdout);
+</code></pre>
+<p>To output with custom pattern:</p>
+<pre><code class="language-c">CL_Logger *logger = CL_LOGGER_CREATE(&quot;TEST&quot;, &quot;%C[%V]%C(%F,%L)%C%M%C&quot;, 1, stdout);
+</code></pre>
+<p>To output to stderr:</p>
+<pre><code class="language-c">CL_Logger *logger = CL_LOGGER_CREATE(&quot;TEST&quot;, NULL, 1, stderr);
+</code></pre>
+<p>To output to a file:</p>
+<pre><code class="language-c">FILE *file = fopen(&quot;log.txt&quot;, &quot;w&quot;);
+CL_Logger *logger = CL_LOGGER_CREATE(&quot;TEST&quot;, NULL, 1, file);
+</code></pre>
+<p>To write to multiple outputs:</p>
+<pre><code class="language-c">FILE *file = fopen(&quot;log.txt&quot;, &quot;w&quot;);
+CL_Logger *logger = CL_LOGGER_CREATE(&quot;TEST&quot;, NULL, 2, stderr file);
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cl_logger_destroy"><a class="header" href="#cl_logger_destroy">CL_LOGGER_DESTROY</a></h1>
+<pre><code class="language-c">void CL_LOGGER_DESTROY(Logger *logger);
+</code></pre>
+<p>This function will free the data related to the logger.
+The passed logger cannot be used after calling this function.</p>
+<h4 id="usage-1"><a class="header" href="#usage-1">Usage</a></h4>
+<pre><code class="language-c">CL_Logger *logger = CL_LOGGER_CREATE(&amp;quot;TEST&amp;quot;, NULL, 1, stdout);
+
+// ...
+
+CL_LOGGER_DESTROY(logger);
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cl_log_"><a class="header" href="#cl_log_">CL_LOG_...</a></h1>
+<pre><code class="language-c">void CL_LOG_TRACE(Logger *logger, const char *format, ...);
+void CL_LOG_INFO(Logger *logger, const char *format, ...);
+void CL_LOG_WARN(Logger *logger, const char *format, ...);
+void CL_LOG_ERROR(Logger *logger, const char *format, ...);
+void CL_LOG_FATAL(Logger *logger, const char *format, ...);
+</code></pre>
+<p>These functions are used to log using a specific logger.
+A new line is always printed at the end of the function.</p>
+<h4 id="parameters-1"><a class="header" href="#parameters-1">Parameters</a></h4>
+<ul>
+<li><code>logger</code> -&gt; The logger used to print.</li>
+<li><code>format</code> and <code>...</code> -&gt; The message to log. These two parameters work the same as for <code>printf</code> in the standard library.</li>
+</ul>
+<h4 id="usage-2"><a class="header" href="#usage-2">Usage</a></h4>
+<p>To print a random integer as INFO:</p>
+<pre><code class="language-c">CL_Logger *logger = CL_LOGGER_CREATE(&quot;TEST&quot;, NULL, 1, stdout);
+// ...
+CL_LOG_INFO(logger, &quot;%d&quot;, rand());
+// ...
+CL_LOGGER_DESTROY(logger);
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cl_log_lvl_set"><a class="header" href="#cl_log_lvl_set">CL_LOG_LVL_SET</a></h1>
+<pre><code class="language-c">void CL_LOGGER_LVL_SET(CL_Logger *logger, CL_LogLevel lvl);
+</code></pre>
+<p>Sets the <a href="functions/../ch3_log_levels.html">log level</a> at which the logger is to output.</p>
+<h4 id="parameters-2"><a class="header" href="#parameters-2">Parameters</a></h4>
+<ul>
+<li><code>logger</code> -&gt; the logger to modify</li>
+<li><code>lvl</code> -&gt; the <a href="functions/../ch3_log_levels.html">log level</a> to set</li>
+</ul>
+<h4 id="usage-3"><a class="header" href="#usage-3">Usage</a></h4>
+<p>To set the level to INFO:</p>
+<pre><code class="language-c">CL_Logger *logger = CL_LOGGER_CREATE(&quot;TEST&quot;, NULL, 1, stdout);
+CL_LOGGER_LVL_SET(logger, CL_LOG_LEVEL_INFO);
+// ...
+CL_LOG_TRACE(logger, &quot;will not be output&quot;)
+CL_LOG_INFO(logger, &quot;will be output&quot;);
+CL_LOG_WARN(logger, &quot;will be output&quot;);
+// ...
+CL_LOGGER_DESTROY(logger);
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cl_log_lvl_get"><a class="header" href="#cl_log_lvl_get">CL_LOG_LVL_GET</a></h1>
+<pre><code class="language-c">CL_LogLevel CL_LOGGER_LVL_GET(CL_Logger *logger);
+</code></pre>
+<p>Returns the <a href="functions/../ch3_log_levels.html">log level</a> of the passed logger.</p>
+<h4 id="parameters-3"><a class="header" href="#parameters-3">Parameters</a></h4>
+<ul>
+<li><code>logger</code> -&gt; the logger from which the <a href="functions/../ch3_log_levels.html">log level</a> is retrieved.</li>
+</ul>
+<h3 id="usage-4"><a class="header" href="#usage-4">Usage</a></h3>
+<pre><code class="language-c">CL_Logger *logger = CL_LOGGER_CREATE(&amp;quot;TEST&amp;quot;, NULL, 1, stdout);
+// ...
+CL_LogLevel level = CL_LOGGER_LVL_GET(logger);
+// ...
+CL_LOGGER_DESTROY(logger);
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="log-levels"><a class="header" href="#log-levels">Log Levels</a></h1>
+<p>The different levels a logger can be at:</p>
+<pre><code class="language-c">typedef enum CL_LogLevel
+{
+	CL_LOG_LEVEL_FATAL = 0,
+	CL_LOG_LEVEL_ERROR,
+	CL_LOG_LEVEL_WARN,
+	CL_LOG_LEVEL_INFO,
+	CL_LOG_LEVEL_TRACE
+} CL_LogLevel;
+</code></pre>
+<h4 id="usage-5"><a class="header" href="#usage-5">Usage</a></h4>
+<p>No output will occur if the level of the logger is higher than the level of the function being called.
+For example:</p>
+<pre><code class="language-c">CL_Logger *logger = CL_LOGGER_CREATE(&quot;TEST&quot;, NULL, 1, stdout);
+CL_LOGGER_LVL_SET(logger, CL_LOG_LEVEL_WARN);
+// ...
+CL_LOG_INFO(logger, &quot;will not be output&quot;);
+CL_LOG_WARN(logger, &quot;will be output&quot;);
+CL_LOG_ERROR(logger, &quot;will be output&quot;);
+// ...
+CL_LOGGER_DESTROY(logger);
+</code></pre>
+<p>By default the level of a logger is <code>CL_LOG_LEVEL_TRACE</code>.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="next" href="ch2_functions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
                         <div style="clear: both"></div>
                     </nav>
                 </div>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="next" href="ch2_functions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
             </nav>
 
         </div>
@@ -206,5 +351,10 @@ int main(int argc, char **argv)
         <script src="book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
     </body>
 </html>

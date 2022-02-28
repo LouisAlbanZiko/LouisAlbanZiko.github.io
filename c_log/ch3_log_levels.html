@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Getting Started - docs.c_log</title>
+        <title>Log Levels - docs.c_log</title>
         <!-- Custom HTML head -->
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
@@ -75,7 +75,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="ch1_getting_started.html"><strong aria-hidden="true">1.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="ch2_functions.html"><strong aria-hidden="true">2.</strong> Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="functions/CL_LOGGER_CREATE.html"><strong aria-hidden="true">2.1.</strong> CL_LOGGER_CREATE</a></li><li class="chapter-item expanded "><a href="functions/CL_LOGGER_DESTROY.html"><strong aria-hidden="true">2.2.</strong> CL_LOGGER_DESTROY</a></li><li class="chapter-item expanded "><a href="functions/CL_LOG_.html"><strong aria-hidden="true">2.3.</strong> CL_LOG_...</a></li><li class="chapter-item expanded "><a href="functions/CL_LOG_LVL_SET.html"><strong aria-hidden="true">2.4.</strong> CL_LOG_LVL_SET</a></li><li class="chapter-item expanded "><a href="functions/CL_LOG_LVL_GET.html"><strong aria-hidden="true">2.5.</strong> CL_LOG_LVL_GET</a></li></ol></li><li class="chapter-item expanded "><a href="ch3_log_levels.html"><strong aria-hidden="true">3.</strong> Log Levels</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="ch1_getting_started.html"><strong aria-hidden="true">1.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="ch2_functions.html"><strong aria-hidden="true">2.</strong> Functions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="functions/CL_LOGGER_CREATE.html"><strong aria-hidden="true">2.1.</strong> CL_LOGGER_CREATE</a></li><li class="chapter-item expanded "><a href="functions/CL_LOGGER_DESTROY.html"><strong aria-hidden="true">2.2.</strong> CL_LOGGER_DESTROY</a></li><li class="chapter-item expanded "><a href="functions/CL_LOG_.html"><strong aria-hidden="true">2.3.</strong> CL_LOG_...</a></li><li class="chapter-item expanded "><a href="functions/CL_LOG_LVL_SET.html"><strong aria-hidden="true">2.4.</strong> CL_LOG_LVL_SET</a></li><li class="chapter-item expanded "><a href="functions/CL_LOG_LVL_GET.html"><strong aria-hidden="true">2.5.</strong> CL_LOG_LVL_GET</a></li></ol></li><li class="chapter-item expanded "><a href="ch3_log_levels.html" class="active"><strong aria-hidden="true">3.</strong> Log Levels</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -134,53 +134,37 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="setup"><a class="header" href="#setup">Setup</a></h2>
-<h4 id="with-premake"><a class="header" href="#with-premake">With Premake</a></h4>
-<p>Clone the repository to the location of your choice. Create a new premake workspace and include the file c_log/premake5.lua inside your own premake file. Then link your executable project to the c_log project using this line links <code>c_log</code>. Finally compile the project. For a full setup of premake go to the premake <a href="https://github.com/premake/premake-core">github page</a>.</p>
-<h4 id="without-premake"><a class="header" href="#without-premake">Without Premake</a></h4>
-<p>Copy the files c_log.c, c_log.h and internal.h into your project directory and compile your project with these files.</p>
-<h2 id="including-to-project"><a class="header" href="#including-to-project">Including to project</a></h2>
-<p>Once added to your project the file can be included as follows. Make sure the c_log.h file is in the include path of your project.</p>
-<pre><code class="language-c">#include &lt;c_log.h&gt;
-</code></pre>
-<h2 id="example"><a class="header" href="#example">Example</a></h2>
-<p>The following example will create 2 loggers and show some output to demonstrate the capabilities of the library.</p>
-<pre><code class="language-c">#include &lt;stdlib.h&gt;
-#include &lt;stdint.h&gt;
-#include &lt;stdio.h&gt;
-
-//#define CL_LOG_DISABLED
-#include &lt;c_log.h&gt;
-
-int main(int argc, char **argv)
+                        <h1 id="log-levels"><a class="header" href="#log-levels">Log Levels</a></h1>
+<p>The different levels a logger can be at:</p>
+<pre><code class="language-c">typedef enum CL_LogLevel
 {
-	CL_Logger *logger = CL_LOGGER_CREATE(&quot;LOGGER&quot;, &quot;[%T] (%N) %% %C%V\t%F, %L %M%C&quot;, 1, stdout);
-
-	CL_Logger *logger2 = CL_LOGGER_CREATE(&quot;LOGGER2&quot;, NULL, 1, stdout);
-
-	CL_LOG_TRACE(logger, &quot;Hello World! %d&quot;, rand());
-	CL_LOG_INFO(logger, &quot;Hello World! %d&quot;, rand());
-	CL_LOG_WARN(logger, &quot;Hello World! %d&quot;, rand());
-	CL_LOG_ERROR(logger, &quot;Hello World! %d&quot;, rand());
-	CL_LOG_FATAL(logger, &quot;Hello World! %d&quot;, rand());
-
-	CL_LOG_TRACE(logger2, &quot;Hello World! %d&quot;, rand());
-	CL_LOG_INFO(logger2, &quot;Hello World! %d&quot;, rand());
-	CL_LOG_WARN(logger2, &quot;Hello World! %d&quot;, rand());
-	CL_LOG_ERROR(logger2, &quot;Hello World! %d&quot;, rand());
-	CL_LOG_FATAL(logger2, &quot;Hello World! %d&quot;, rand());
-
-	CL_LOGGER_DESTROY(logger);
-	CL_LOGGER_DESTROY(logger2);
-}
+	CL_LOG_LEVEL_FATAL = 0,
+	CL_LOG_LEVEL_ERROR,
+	CL_LOG_LEVEL_WARN,
+	CL_LOG_LEVEL_INFO,
+	CL_LOG_LEVEL_TRACE
+} CL_LogLevel;
 </code></pre>
+<h4 id="usage"><a class="header" href="#usage">Usage</a></h4>
+<p>No output will occur if the level of the logger is higher than the level of the function being called.
+For example:</p>
+<pre><code class="language-c">CL_Logger *logger = CL_LOGGER_CREATE(&quot;TEST&quot;, NULL, 1, stdout);
+CL_LOGGER_LVL_SET(logger, CL_LOG_LEVEL_WARN);
+// ...
+CL_LOG_INFO(logger, &quot;will not be output&quot;);
+CL_LOG_WARN(logger, &quot;will be output&quot;);
+CL_LOG_ERROR(logger, &quot;will be output&quot;);
+// ...
+CL_LOGGER_DESTROY(logger);
+</code></pre>
+<p>By default the level of a logger is <code>CL_LOG_LEVEL_TRACE</code>.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="next" href="ch2_functions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
+                            <a rel="prev" href="functions/CL_LOG_LVL_GET.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
                             </a>
                         <div style="clear: both"></div>
                     </nav>
@@ -188,8 +172,8 @@ int main(int argc, char **argv)
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="next" href="ch2_functions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
+                    <a rel="prev" href="functions/CL_LOG_LVL_GET.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
                     </a>
             </nav>
 
